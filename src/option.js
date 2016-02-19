@@ -5,11 +5,12 @@ const assert = require('hoek').assert;
 const schema = require('./schema');
 
 class Option {
-  constructor(option) {
+  constructor(option, config) {
     const result = schema.Option.validate(option);
     assert(!result.err, 'Option not valid');
 
     this.option = result.value;
+    this.config = config;
   }
 
   get name() {

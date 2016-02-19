@@ -2,9 +2,9 @@
   "name": "uniconfig",
   "version": "0.0.0",
   "description": "Universal configuration proxy",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "mocha"
   },
   "author": "Jaka Hudoklin <jakahudoklin@gmail.com> (http://www.jakahudoklin.com)",
   "license": "MIT",
@@ -15,5 +15,9 @@
     "lodash": "^4.5.0",
     "winston": "^2.1.1",
     "yamljs": "^0.2.5"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
   }
 }

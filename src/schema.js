@@ -12,7 +12,7 @@ const Option = Joi.object({
 
 const Config = Joi.object({
   name: Joi.string(), // service name
-  expose: Joi.string().allow(['env']), // expose as
+  format: Joi.string().allow(['env']), // expose as
   description: Joi.string(), // service description
   run: Joi.string()
 });

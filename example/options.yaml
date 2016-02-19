@@ -1,10 +1,8 @@
 name: core
 description: Some service description
-expose: env
+format: env
 run: npm start
 options:
     - name: redis
       description: Path to redis database
-      value: GATEHUB_REDIS
-      store: infrastructure
-      global: true
+      as: GATEHUB_REDIS

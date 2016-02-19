@@ -22,7 +22,7 @@ class Runner {
     ).then(options => {
       var env = global.process.env;
 
-      if (this.config.expose == 'env') {
+      if (this.config.format == 'env') {
         options = _.fromPairs(_.map(options, option => {
           return [option.as, option.value];
         }));

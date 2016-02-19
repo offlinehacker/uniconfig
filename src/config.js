@@ -22,8 +22,8 @@ class Config {
     return this.config.description;
   }
 
-  get expose() {
-    return this.config.expose;
+  get format() {
+    return this.config.format;
   }
 
   get run() {
@@ -31,7 +31,7 @@ class Config {
   }
 
   get options() {
-    return _.map(this.config.options, option => new Option(option));
+    return _.map(this.config.options, option => new Option(option, this));
   }
 }
 
