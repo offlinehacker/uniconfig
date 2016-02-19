@@ -1,0 +1,19 @@
+{
+  "name": "uniconfig",
+  "version": "0.0.0",
+  "description": "Universal configuration proxy",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Jaka Hudoklin <jakahudoklin@gmail.com> (http://www.jakahudoklin.com)",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.3.1",
+    "hoek": "^3.0.4",
+    "joi": "^8.0.1",
+    "lodash": "^4.5.0",
+    "winston": "^2.1.1",
+    "yamljs": "^0.2.5"
+  }
+}
