@@ -1,3 +1,4 @@
+const fs = require('fs');
 const argv = require('yargs');
 const _ = require('lodash');
 
@@ -36,10 +37,15 @@ if (args.config) {
 // Try alternative methods to create configuration
 if (!config) {
   if (process.env.KUBERNETES_SERVICE_HOST) {
+    token = fs.readFileSync('/run/secrets/kubernetes.io/serviceaccount/token');
     config = new Config({
       providers: [{
         name: 'uniconfig-k8s',
-        config: { host: process.env.KUBERNETES_SERVICE_HOST }
+        config: {
+          host: `${process.env.KUBERNETES_SERVICE_HOST}:${process.env.KUBERNETES_SERVICE_PORT || 8080}`,
+          protocol: process.env.KUBERNETES_SERVICE_PORT == 443 ? 'https' : 'http',
+          token: token
+        }
       }]
     });
   } else {
