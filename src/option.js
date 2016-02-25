@@ -37,7 +37,7 @@ class Option {
   get required() {
     return _.has(this.option, 'required') ?
         this.option.required :
-      _.has(this.optiona, 'optional') ?
+      _.has(this.option, 'optional') ?
         !this.option.optional:
       true;
   }
