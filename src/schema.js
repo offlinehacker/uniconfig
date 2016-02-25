@@ -7,10 +7,9 @@ const optionName = Joi.string();
 const Option = Joi.object({
   name: optionName, // option name
   description: Joi.string(), // service description
-  as: Joi.string(), // option value
-  global: Joi.boolean(),
-  store: Joi.string().default('services')
-});
+  required: Joi.boolean(),
+  optional: Joi.boolean()
+}).xor('required', 'optional');
 
 const Service = Joi.object({
   name: Joi.string(), // service name

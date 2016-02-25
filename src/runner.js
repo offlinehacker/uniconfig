@@ -5,6 +5,7 @@ const assert = require('hoek').assert;
 const _ = require('lodash');
 const winston = require('winston');
 
+const errors = require('./errors');
 const Service = require('./service');
 const Resolver = require('./resolver');
 
@@ -19,22 +20,29 @@ class Runner {
 
   run(env) {
     return Promise.all(
-      _.map(this.service.options, option => {
+      _.reject(_.map(this.service.options, option => {
         return this.resolver.get(option, env).then(value => {
           option = _.extend(option, {value: value});
           winston.info('exposing option', option);
           return option;
+        }).catch(errors.OptionNotFound, err => {
+          if (option.required) throw err;
         });
-      })
+      }), _.isUndefined)
     ).then(options => {
-      var env = global.process.env;
+      const envOptions = _
+        .chain(this.service.env)
+        .map((env, name) => {
+          const option = _.find(options, ['name', name]) || {};
+          return [env, option.value];
+        })
+        .fromPairs()
+        .omitBy(_.isUndefined)
+        .value();
 
-      _.extend(env, _.fromPairs(_.map(this.service.env, (env, name) => {
-        const option = _.find(options, ['name', name]) || {};
-        return [env, option.value];
-      })));
-
-      const process = exec(this.service.cmd, { env: env });
+      const process = exec(this.service.cmd, {
+        env: _.extend(global.process.env, envOptions)
+      });
 
       process.stdout.pipe(global.process.stdout);
       process.stderr.pipe(global.process.stderr);

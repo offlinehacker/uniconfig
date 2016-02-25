@@ -60,7 +60,7 @@ if (args._[0] == 'options') {
     resolver.get(option, env).then(value => {
       console.log(`${option.name} -> ${value}`)
     }).catch(errors.OptionNotFound, err => {
-      console.log(`${option.name} -> OptionsNotFound`);
+      console.log(`${option.name} -> OptionNotFound`);
     });
   });
 } else {

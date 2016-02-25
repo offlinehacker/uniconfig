@@ -32,6 +32,19 @@ class Option {
   get store() {
     return this.option.store;
   }
+
+  get required() {
+    return
+      _.has(this.option, 'required') ?
+        this.option.required :
+      _.has(this.optiona, 'optional') ?
+        !this.option.optional:
+      true;
+  }
+
+  get optional() {
+    return !this.required;
+  }
 }
 
 module.exports = Option;
