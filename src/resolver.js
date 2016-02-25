@@ -8,14 +8,16 @@ const Provider = require('./provider');
 const Errors = require('./errors');
 
 class Resolver {
-  constructor() {
-    this.providers = [];
-    this._regex = /\{\{([a-z.A-Z]+)\}\}/g;
-  }
+  constructor(providers) {
+    if (!_.isArray(providers)) providers = [providers];
 
-  register(provider) {
-    assert(provider instanceof Provider, 'value not instance of provider');
-    this.providers.push(provider);
+    assert(
+      _.every(providers, provider => provider instanceof Provider),
+      'providers must be instance of Provider'
+    );
+
+    this.providers = providers;
+    this._regex = /\{\{([a-z.A-Z]+)\}\}/g;
   }
 
   _parseTemplate(value) {
@@ -40,17 +42,17 @@ class Resolver {
     return value;
   }
 
-  _getOption(providers, name) {
+  _getOption(providers, name, env) {
     if (_.isEmpty(providers)) {
       return Promise.reject(new Errors.OptionNotFound(name));
     }
 
     return providers[0]
       // get option from current provider
-      .get(name).then(value => {
+      .get(name, env).then(value => {
         const variables = this._parseTemplate(value);
         const values = _.map(variables, variable => {
-          return this._getOption(this.providers, variable);
+          return this._getOption(this.providers, variable, env);
         });
 
         return Promise.props(values).then(values => {
@@ -60,13 +62,13 @@ class Resolver {
 
       // try next provider
       .catch(Errors.OptionNotFound, err => {
-        return this._getOption(providers.splice(1), name);
+        return this._getOption(providers.splice(1), name, env);
       });
   }
 
   get(option, env) {
-    const name = [env.namespace, 'services', option.config.name, option.name].join('.');
-    return this._getOption(this.providers, name);
+    const name = ['services', option.config.name, option.name].join('.');
+    return this._getOption(this.providers, name, env);
   }
 }
 

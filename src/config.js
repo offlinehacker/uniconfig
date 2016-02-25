@@ -4,34 +4,20 @@ const assert = require('hoek').assert;
 const _ = require('lodash');
 
 const schema = require('./schema');
-const Option = require('./option');
+const Provider = require('./provider');
 
 class Config {
-  constructor(config) {
-    const result = schema.Config.validate(config);
+  constructor(specs) {
+    const result = schema.Config.validate(specs);
     assert(!result.err, 'Config not valid');
 
-    this.config = result.value;
+    this.specs = result.value;
   }
 
-  get name() {
-    return this.config.name
-  }
-
-  get description() {
-    return this.config.description;
-  }
-
-  get format() {
-    return this.config.format;
-  }
-
-  get run() {
-    return this.config.run;
-  }
-
-  get options() {
-    return _.map(this.config.options, option => new Option(option, this));
+  get providers() {
+    return _.map(this.specs.providers, provider => {
+      return Provider.create(provider.name, provider.config);
+    });
   }
 }
 

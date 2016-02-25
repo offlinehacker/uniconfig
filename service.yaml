@@ -1,0 +1,10 @@
+name: core
+description: Some service description
+run:
+    cmd: env
+    env:
+        redis: GATEHUB_REDIS
+options:
+    - name: redis
+      description: Path to redis database
+      as: GATEHUB_REDIS

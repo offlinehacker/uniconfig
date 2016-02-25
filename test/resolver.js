@@ -2,34 +2,30 @@ const expect = require('chai').expect;
 
 const Provider = require('../src/provider');
 const Resolver = require('../src/resolver');
-const Config = require('../src/config');
+const Service = require('../src/service');
 
 describe('resolver', () => {
   describe('with one provider', () => {
     before(() => {
-      provider = Provider.create('node', {
-        module: 'memory',
-        settings: {
-          staging: {
-            services: {
-              redis: {
-                url: 'localhost'
-              },
-              server: {
-                redis: 'redis://{{staging.services.redis.url}}',
-                host: '{{undefined}}'
-              }
+      provider = Provider.create('memory', {
+        staging: {
+          services: {
+            redis: {
+              url: 'localhost'
+            },
+            server: {
+              redis: 'redis://{{staging.services.redis.url}}',
+              host: '{{undefined}}'
             }
           }
         }
       });
 
-      this.resolver = new Resolver();
-      this.resolver.register(provider);
+      this.resolver = new Resolver(provider);
     });
 
     it('should resolve value', () => {
-      var config = new Config({
+      var config = new Service({
         name: 'redis',
         options: [{
           name: 'url'
@@ -42,7 +38,7 @@ describe('resolver', () => {
     });
 
     it('should resolve template value', () => {
-      var config = new Config({
+      var config = new Service({
         name: 'server',
         options: [{
           name: 'redis'
@@ -55,7 +51,7 @@ describe('resolver', () => {
     });
 
     it('should error if not value is found', () => {
-      var config = new Config({
+      var config = new Service({
         name: 'server',
         options: [{
           name: 'undefined'
@@ -68,7 +64,7 @@ describe('resolver', () => {
     });
 
     it('should error if template value not found', () => {
-      var config = new Config({
+      var config = new Service({
         name: 'server',
         options: [{
           name: 'host'

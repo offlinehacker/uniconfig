@@ -12,7 +12,7 @@ class Memory extends Provider {
   constructor(options) {
     super(options);
 
-    this.settings = options.settings;
+    this.settings = options;
   }
 
   get(name) {

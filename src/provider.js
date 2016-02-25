@@ -12,28 +12,27 @@ class Provider {
   }
 
   static create(name, config) {
-    assert(name, 'Provider name not provided');
+    assert(name, 'Module name not provided');
 
-    if (name == 'node') {
-      const providers = require('./providers');
+    const providers = require('./providers');
 
-      assert(config.module, 'Module name not defined');
-
-      var Module;
-      if (providers[config.module]) {
-        Module = providers[config.module];
-      } else {
-        try {
-          Module = require(config.module);
-        } catch(e) {
-          throw new Error('Cannot load provider: ' + e.toString());
-        }
+    var provider;
+    if (providers[name]) {
+      provider = providers[name];
+    } else {
+      try {
+        provider = require(name);
+      } catch(e) {
+        throw new Error('Cannot load provider: ' + e.toString());
       }
-
-      return new Module(config);
     }
 
-    throw new Error('Provider "' + name + '" not supported');
+    assert(
+      provider.prototype instanceof Provider,
+      'provider not instance of Provider'
+    );
+
+    return new provider(config);
   }
 }
 
