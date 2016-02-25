@@ -1,6 +1,6 @@
 {
   "name": "uniconfig",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Universal configuration proxy",
   "main": "src",
   "bin": "bin/uniconfig",
