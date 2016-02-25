@@ -17,7 +17,7 @@ class Resolver {
     );
 
     this.providers = providers;
-    this._regex = /\{\{([a-z.A-Z]+)\}\}/g;
+    this._regex = /\{\{([a-z.A-Z-]+)\}\}/g;
   }
 
   _parseTemplate(value) {
