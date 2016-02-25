@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('hoek').assert;
+const _ = require('lodash');
 
 const schema = require('./schema');
 
@@ -34,8 +35,7 @@ class Option {
   }
 
   get required() {
-    return
-      _.has(this.option, 'required') ?
+    return _.has(this.option, 'required') ?
         this.option.required :
       _.has(this.optiona, 'optional') ?
         !this.option.optional:

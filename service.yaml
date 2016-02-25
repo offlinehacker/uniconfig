@@ -7,4 +7,3 @@ run:
 options:
     - name: redis
       description: Path to redis database
-      required: false
