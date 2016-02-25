@@ -37,7 +37,12 @@ if (args.config) {
 // Try alternative methods to create configuration
 if (!config) {
   if (process.env.KUBERNETES_SERVICE_HOST) {
-    token = fs.readFileSync('/run/secrets/kubernetes.io/serviceaccount/token');
+    var token;
+
+    try {
+      token = fs.readFileSync('/run/secrets/kubernetes.io/serviceaccount/token');
+    } catch(e) {}
+
     config = new Config({
       providers: [{
         name: 'uniconfig-k8s',
