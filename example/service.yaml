@@ -7,3 +7,4 @@ run:
 options:
     - name: redis
       description: Path to redis database
+      default: true
