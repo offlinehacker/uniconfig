@@ -1,3 +1,6 @@
+'use strict';
+
+const exec = require('child_process').exec;
 const fs = require('fs');
 const argv = require('yargs');
 const _ = require('lodash');
@@ -8,11 +11,13 @@ const Runner = require('./runner');
 const Resolver = require('./resolver');
 const Config = require('./config');
 const Service = require('./service');
+const Provider = require('./provider');
 
 const args = argv
   .option('provider', { desc: 'Provider name', nargs: 1})
   .option('config', { desc: 'Uniconfig configuration file', nargs: 1})
   .options('service', { desc: 'Uniconfig service config', default: './service.yaml'})
+  .options('run', { desc: 'Run service' })
   .command('options [name]', '', yargs => {
     return yargs
       .option('add', { desc: 'Add option', type: 'boolean' })
@@ -24,60 +29,49 @@ const args = argv
   .help()
   .argv;
 
-// Try to get uniconfig configuration
 var config;
 if (args.config) {
   config = util.load(args.config);
 } else if(process.env.UNICONFIG_CONFIG) {
   config = util.load(process.env.UNICONFIG_CONFIG);
 } else{
-  config = util.findParent(process.cwd());
+  const path = util.findParent(process.cwd());
+  if (path) config = util.load(path);
 }
 
-// Try alternative methods to create configuration
-if (!config) {
-  if (process.env.KUBERNETES_SERVICE_HOST) {
+const service = new Service(util.load(args.service));
+const resolver = new Resolver();
+
+if(!config) {
+  if(process.env.KUBERNETES_SERVICE_HOST) {
     var token;
 
     try {
       token = fs.readFileSync('/run/secrets/kubernetes.io/serviceaccount/token');
     } catch(e) {}
 
-    config = new Config({
-      providers: [{
-        name: 'uniconfig-k8s',
-        config: {
-          host: `${process.env.KUBERNETES_SERVICE_HOST}:${process.env.KUBERNETES_SERVICE_PORT || 8080}`,
-          protocol: process.env.KUBERNETES_SERVICE_PORT == 443 ? 'https' : 'http',
-          token: token
-        }
-      }]
-    });
-  } else {
-    console.error("Config not provided");
-    argv.showHelp();
-    process.exit(1);
+    resolver.register(
+      Provider.create('uniconfig-k8s', {
+        host: `${process.env.KUBERNETES_SERVICE_HOST}:${process.env.KUBERNETES_SERVICE_PORT || 8080}`,
+        protocol: process.env.KUBERNETES_SERVICE_PORT == 443 ? 'https' : 'http',
+        token: token
+      })
+    );
   }
 } else {
-  config = new Config(config);
+  _.forEach(this.config.providers, provider => resolver.register(provider));
 }
 
-const resolver = new Resolver(config.providers);
-const service = new Service(util.load(args.service));
-const env = { namespace: process.env.NODE_ENV || 'default' }
+const runner = new Runner(service, resolver, {
+  namespace: process.env.NODE_ENV
+});
 
 if (args._[0] == 'options') {
-  _.forEach(service.options, option => {
-    resolver.get(option, env).then(value => {
-      console.log(`${option.name} -> ${value}`)
-    }).catch(errors.OptionNotFound, err => {
-      console.log(`${option.name} -> OptionNotFound`);
-    });
-  });
+  runner.showOptions();
 } else {
-  const runner = new Runner(service, resolver);
-  runner.run(env).catch(err => {
-    console.error(err);
-    process.exit(1);
+  runner.generateConfigFiles().then(() => {
+    if (service.shouldRun) {
+      runner.executeService({ run: args.run });
+    }
   });
 }

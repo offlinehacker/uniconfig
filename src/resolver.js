@@ -8,16 +8,19 @@ const Provider = require('./provider');
 const Errors = require('./errors');
 
 class Resolver {
-  constructor(providers) {
-    if (!_.isArray(providers)) providers = [providers];
-
-    assert(
-      _.every(providers, provider => provider instanceof Provider),
-      'providers must be instance of Provider'
-    );
-
-    this.providers = providers;
+  constructor() {
+    this.providers = [];
     this._regex = /\{\{([a-z.A-Z-]+)\}\}/g;
+  }
+
+  register(provider) {
+    if(_.isArray(provider)) {
+      return _.forEach(provider, resolver => this.register(resolver));
+    }
+
+    assert(provider instanceof Provider, "provider not instance of Provider");
+
+    this.providers.push(provider);
   }
 
   _parseTemplate(value) {

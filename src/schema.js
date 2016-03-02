@@ -8,7 +8,8 @@ const Option = Joi.object({
   name: optionName, // option name
   description: Joi.string(), // service description
   required: Joi.boolean(),
-  optional: Joi.boolean()
+  optional: Joi.boolean(),
+  default: Joi.any()
 }).xor('required', 'optional');
 
 const Service = Joi.object({

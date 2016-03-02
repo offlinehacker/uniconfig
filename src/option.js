@@ -45,6 +45,14 @@ class Option {
   get optional() {
     return !this.required;
   }
+
+  get default() {
+    return this.option.default;
+  }
+
+  get hasDefault() {
+    return _.has(this.option, 'default');
+  }
 }
 
 module.exports = Option;
