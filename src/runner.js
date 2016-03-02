@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs');
 const exec = require('child_process').exec;
 const assert = require('hoek').assert;
 const _ = require('lodash');
@@ -30,24 +31,36 @@ class Runner {
         });
       }), _.isUndefined)
     ).then(options => {
-      const envOptions = _
-        .chain(this.service.env)
-        .map((env, name) => {
-          const option = _.find(options, ['name', name]) || {};
-          return [env, option.value];
-        })
-        .fromPairs()
-        .omitBy(_.isUndefined)
-        .value();
+      options = _.keyBy(options, 'name');
 
-      const process = exec(this.service.cmd, {
-        env: _.extend(global.process.env, envOptions)
+      _.forEach(this.service.files, file => {
+        debugger
+        const content = file.template(
+          _.mapValues(options, option => option.value)
+        );
+        fs.writeFileSync(file.dst, content);
       });
 
-      process.stdout.pipe(global.process.stdout);
-      process.stderr.pipe(global.process.stderr);
+      if (this.service.shouldRun) {
+        const envOptions = _
+          .chain(this.service.env)
+          .map((env, name) => {
+            const option = options[name] || {};
+            return [env, option.value];
+          })
+          .fromPairs()
+          .omitBy(_.isUndefined)
+          .value();
 
-      process.on('exit', code => global.process.exit(code));
+        const process = exec(this.service.cmd, {
+          env: _.extend(global.process.env, envOptions)
+        });
+
+        process.stdout.pipe(global.process.stdout);
+        process.stderr.pipe(global.process.stderr);
+
+        process.on('exit', code => global.process.exit(code));
+      }
     });
   }
 }

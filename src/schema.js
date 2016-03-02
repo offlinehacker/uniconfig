@@ -15,6 +15,10 @@ const Service = Joi.object({
   name: Joi.string(), // service name
   format: Joi.string().allow(['env']), // expose as
   description: Joi.string(), // service description
+  files: Joi.array().items(Joi.object({
+    dst: Joi.string().required(),
+    template: Joi.string().required()
+  })),
   run: Joi.object({
     cmd: Joi.string(),
     env: Joi.object().pattern(/.*/, optionName)

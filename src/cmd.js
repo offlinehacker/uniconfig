@@ -75,11 +75,9 @@ if (args._[0] == 'options') {
     });
   });
 } else {
-  if (service.shouldRun) {
-    const runner = new Runner(service, resolver);
-    runner.run(env).catch(err => {
-      console.error(err);
-      process.exit(1);
-    });
-  }
+  const runner = new Runner(service, resolver);
+  runner.run(env).catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 }

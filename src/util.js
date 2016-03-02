@@ -47,5 +47,9 @@ module.exports = {
 
       subPath = path.resolve(subPath, '..');
     }
+  },
+
+  template: (file, options) => {
+
   }
 };

@@ -31,11 +31,20 @@ class Service {
   }
 
   get shouldRun() {
-    return this.specs.run.cmd;
+    return this.specs.run;
   }
 
   get options() {
     return _.map(this.specs.options, option => new Option(option, this));
+  }
+
+  get files() {
+    return _.map(this.specs.files, file => {
+      return {
+        dst: file.dst,
+        template: _.template(file.template)
+      };
+    });
   }
 }
 
