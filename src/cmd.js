@@ -70,7 +70,7 @@ if (args._[0] == 'options') {
   runner.showOptions();
 } else {
   runner.generateConfigFiles().then(() => {
-    if (service.shouldRun) {
+    if (service.shouldRun || args.run) {
       runner.executeService({ run: args.run });
     }
   });

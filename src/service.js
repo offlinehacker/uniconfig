@@ -23,11 +23,11 @@ class Service {
   }
 
   get cmd() {
-    return this.specs.run.cmd;
+    return _.get(this.specs, 'run.cmd');
   }
 
   get env() {
-    return this.specs.run.env;
+    return _.get(this.specs, 'run.env');
   }
 
   get shouldRun() {
