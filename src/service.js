@@ -2,6 +2,7 @@
 
 const assert = require('hoek').assert;
 const _ = require('lodash');
+const fs = require('fs');
 
 const schema = require('./schema');
 const Option = require('./option');
@@ -40,10 +41,14 @@ class Service {
 
   get files() {
     return _.map(this.specs.files, file => {
-      return {
-        dst: file.dst,
-        template: _.template(file.template)
-      };
+      var template;
+      if (file.template) {
+        template = _.template(file.template);
+      } else if(file.src) {
+        template = _.template(fs.readFileSync(file.src));
+      }
+
+      return { dst: file.dst, template: template }
     });
   }
 }
