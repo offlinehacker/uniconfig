@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 
 const Provider = require('./provider');
 const Errors = require('./errors');
+const Option = require('./option');
 
 class Resolver {
   constructor() {
@@ -45,12 +46,26 @@ class Resolver {
     return value;
   }
 
-  _getOption(providers, name, env) {
+  _getOption(providers, option, env) {
     if (_.isEmpty(providers)) {
-      return Promise.reject(new Errors.OptionNotFound(name));
+      return Promise.reject(new Errors.OptionNotFound(_.get(option, 'name') || option));
     }
 
-    return providers[0]
+    const provider = providers[0];
+
+    var name;
+    if (option instanceof Option) {
+      if (provider.global) {
+        name = ['services', option.config.name, option.name].join('.');
+      } else {
+        name = option.name;
+      }
+    } else {
+      name = option;
+      if(!provider.global) throw new Errors.OptionNotFound(name);
+    }
+
+    return provider
       // get option from current provider
       .get(name, env).then(value => {
         const variables = this._parseTemplate(value);
@@ -65,13 +80,12 @@ class Resolver {
 
       // try next provider
       .catch(Errors.OptionNotFound, err => {
-        return this._getOption(providers.splice(1), name, env);
+        return this._getOption(providers.splice(1), option, env);
       });
   }
 
   get(option, env) {
-    const name = ['services', option.config.name, option.name].join('.');
-    return this._getOption(this.providers, name, env);
+    return this._getOption(this.providers, option, env);
   }
 }
 

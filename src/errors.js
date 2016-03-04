@@ -12,6 +12,7 @@ class OptionNotFound extends BaseError {
     super();
     this.name = 'OptionNotFound';
     this.description = 'Option "' + name + '" was not found';
+    this.option = name;
   }
 }
 

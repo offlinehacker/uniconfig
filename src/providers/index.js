@@ -1,4 +1,5 @@
 module.exports = {
   file: require('./file'),
-  memory: require('./memory')
+  memory: require('./memory'),
+  env: require('./env')
 };

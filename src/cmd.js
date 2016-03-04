@@ -42,24 +42,18 @@ if (args.config) {
 const service = new Service(util.load(args.service));
 const resolver = new Resolver();
 
-if(!config) {
-  if(process.env.KUBERNETES_SERVICE_HOST) {
-    var token;
-
-    try {
-      token = fs.readFileSync('/run/secrets/kubernetes.io/serviceaccount/token');
-    } catch(e) {}
-
-    resolver.register(
-      Provider.create('uniconfig-k8s', {
-        host: `${process.env.KUBERNETES_SERVICE_HOST}:${process.env.KUBERNETES_SERVICE_PORT || 8080}`,
-        protocol: process.env.KUBERNETES_SERVICE_PORT == 443 ? 'https' : 'http',
-        token: token
-      })
-    );
-  }
-} else {
+if(config && !args.providers) {
   _.forEach(this.config.providers, provider => resolver.register(provider));
+} else if(args.provider) {
+  const providers = _.isArray(args.provider) ? args.provider : [args.provider];
+  _.forEach(providers, name => {
+    const provider = Provider.create(name, args[name]);
+    resolver.register(provider);
+  });
+} else {
+  if(process.env.KUBERNETES_SERVICE_HOST) {
+    resolver.register(Provider.create('uniconfig-k8s'));
+  }
 }
 
 const runner = new Runner(service, resolver, {

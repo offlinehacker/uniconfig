@@ -44,7 +44,7 @@ class Runner {
           console.log(`${name} -> ${value}`)
         }
       });
-    })
+    });
   }
 
   executeService(options) {
@@ -70,6 +70,9 @@ class Runner {
       process.on('exit', code => global.process.exit(code));
 
       return process;
+    }).catch(errors.OptionNotFound, err => {
+      console.log("Option not found", err.option);
+      process.exit(1);
     });
   }
 
@@ -78,12 +81,13 @@ class Runner {
       _.forEach(this.service.files, file => {
         console.log('generating config file', file.dst);
 
-        const content = file.template(
-          _.mapValues(options, option => option.value)
-        );
+        const content = file.template(options);
 
         fs.writeFileSync(file.dst, content);
       });
+    }).catch(errors.OptionNotFound, err => {
+      console.log("Option not found", err.option);
+      process.exit(1);
     });
   }
 }

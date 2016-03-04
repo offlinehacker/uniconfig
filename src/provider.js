@@ -3,8 +3,9 @@
 const assert = require('hoek').assert;
 
 class Provider {
-  constructor(config) {
-    this.config = config;
+  constructor(config, global) {
+    this.config = config || {};
+    this.global = global;
   }
 
   get(name, env) {
