@@ -12,18 +12,18 @@
   "dependencies": {
     "bluebird": "^3.3.1",
     "commander": "^2.9.0",
-    "hoek": "^3.0.4",
-    "joi": "^8.0.1",
+    "hoek": "^5.0.0",
+    "joi": "^11.1.1",
     "lodash": "^4.5.0",
-    "npm": "^3.7.3",
+    "npm": "^5.4.2",
     "winston": "^2.1.1",
-    "yamljs": "^0.2.5",
-    "yargs": "^4.2.0"
+    "yamljs": "^0.3.0",
+    "yargs": "^9.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^2.4.5",
+    "chai": "^4.1.2",
+    "mocha": "^3.5.3",
     "npm-release": "^1.0.0",
-    "tmp": "0.0.28"
+    "tmp": "0.0.33"
   }
 }
